@@ -18,4 +18,4 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 ## 📋 Status das Sprints
 - [x] **Sprint 0:** Setup inicial e Git.
 - [x] **Sprint 1:** Infraestrutura de Dados e Segurança (Models e Usuário Dedicado).
-- [ ] **Sprint 2:** Configuração do Program.cs e Injeção de Dependência.
+- [x] **Sprint 2:** Configuração do Program.cs e Injeção de Dependência.
