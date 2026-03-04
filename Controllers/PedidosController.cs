@@ -28,13 +28,21 @@ public class PedidosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Pedido>> PostPedido(PedidoCreateDto pedidoDto)
     {
-      var novoPedido = new Pedido
-      {
-          ClienteId = pedidoDto.ClienteId,
-          ProdutoId = pedidoDto.ProdutoId,
-          DataPedido = DateTime.Now
+        var produto = await _context.Produtos.FindAsync(pedidoDto.ProdutoId);
 
-      };
+        if (produto == null)
+            return NotFound("Produto não encontrado, Verifique o ID.");
+
+        
+        var novoPedido = new Pedido
+        {
+            ClienteId = pedidoDto.ClienteId,
+            ProdutoId = pedidoDto.ProdutoId,
+            DataPedido = DateTime.Now,
+            Status = "Pendente",
+            Total = produto.PrecoUnitario
+
+        };
 
       _context.Pedidos.Add(novoPedido);
       await _context.SaveChangesAsync();
