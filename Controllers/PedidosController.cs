@@ -53,6 +53,11 @@ public class PedidosController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, PedidoStatusUpdateDto statusDto)
     {
+        var statusPermitidos = new List<string> { "Pendente", "Preparando", "Pronto", "Entregue", "Cancelado" };
+
+        if (!statusPermitidos.Contains(statusDto.Status))
+            return BadRequest($"Status inválido. Use apenas: {string.Join(", ",statusPermitidos)}");
+
         var pedido = await _context.Pedidos.FindAsync(id);
 
         if (pedido == null)
