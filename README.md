@@ -19,5 +19,6 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 0:** Setup inicial e Git.
 - [x] **Sprint 1:** Infraestrutura de Dados e Segurança (Models e Usuário Dedicado).
 - [x] **Sprint 2:** Configuração do Program.cs e Injeção de Dependência.
-- [/] **Sprint 3:** Implementação dos Controllers (CRUD de Clientes e Produtos).
-- [ ] **Sprint 4:** Lógica de Pedidos e Regras de Negócio.
+- [x] **Sprint 3:** Implementação dos Controllers (CRUD de Clientes e Produtos).
+- [x] **Sprint 4:** Refatoração com DTOs (Data Transfer Objects).
+- [ ] **Sprint 5:** Validações e Tratamento de Erros.

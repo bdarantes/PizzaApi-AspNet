@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
 using PizzariaApi.Models;
+using PizzariaApi.DTOs;
 
 namespace PizzariaApi.Controllers;
 
@@ -25,13 +26,19 @@ public class PedidosController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Pedido>> PostPedido(Pedido pedido)
+    public async Task<ActionResult<Pedido>> PostPedido(PedidoCreateDto pedidoDto)
     {
-        pedido.DataPedido = DateTime.Now;
+      var novoPedido = new Pedido
+      {
+          ClienteId = pedidoDto.ClienteId,
+          ProdutoId = pedidoDto.ProdutoId,
+          DataPedido = DateTime.Now
 
-        _context.Pedidos.Add(pedido);
-        await _context.SaveChangesAsync();
+      };
 
-        return CreatedAtAction(nameof(GetPedidos), new { id = pedido.Id }, pedido);
+      _context.Pedidos.Add(novoPedido);
+      await _context.SaveChangesAsync();
+
+      return CreatedAtAction(nameof(GetPedidos), new { id = novoPedido.Id }, novoPedido);
     }
 }
