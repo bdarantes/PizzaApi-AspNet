@@ -22,4 +22,5 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 3:** Implementação dos Controllers (CRUD de Clientes e Produtos).
 - [x] **Sprint 4:** Refatoração com DTOs (Data Transfer Objects).
 - [x] **Sprint 5:** Lógica de Cálculo de Total (Business Logic).
-- [x] **Sprint 6:** Finalização - Listagem de Pedidos com Detalhes.
+- [x] **Sprint 6:** Implementação do Ciclo de Vida do Pedido (Fluxo de Status).
+- [ ] **Sprint 7:** Finalização do CRUD de Produtos (Delete e Update).

@@ -49,4 +49,19 @@ public class PedidosController : ControllerBase
 
       return CreatedAtAction(nameof(GetPedidos), new { id = novoPedido.Id }, novoPedido);
     }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, PedidoStatusUpdateDto statusDto)
+    {
+        var pedido = await _context.Pedidos.FindAsync(id);
+
+        if (pedido == null)
+            return NotFound("Pedido não encotrado.");
+
+        pedido.Status = statusDto.Status;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = $"Status do pedido {id} atualizado para: {pedido.Status}"});
+    }
 }
