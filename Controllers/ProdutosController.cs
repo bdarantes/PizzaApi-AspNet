@@ -16,7 +16,9 @@ public class ProdutosController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Produto>>> GetProdutos()
     {
-        return await _context.Produtos.ToListAsync();
+        return await _context.Produtos
+            .Where(p => p.Ativo == true)
+            .ToListAsync();
     }
 
     [HttpPost]
@@ -63,9 +65,10 @@ public class ProdutosController : ControllerBase
         if (produto == null)
             return NotFound("Produto não encontrado para exclusão.");
 
-        _context.Produtos.Remove(produto);
+        produto.Ativo = false;
         await _context.SaveChangesAsync();
+    
 
-        return Ok(new { message = $"PRoduto '{produto.Nome}' removido com sucesso. "});
+        return Ok(new { message = $"Produto '{produto.Nome}' foi desativado com sucesso (Soft Delete). "});
     }
 }

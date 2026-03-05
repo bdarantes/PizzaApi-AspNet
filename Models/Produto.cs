@@ -6,4 +6,5 @@ public class Produto
     public string Nome { get; set; } = string.Empty;
     public string Categoria { get; set; } = "Pizza";
     public decimal PrecoUnitario { get; set; }
+    public bool Ativo { get; set; } = true;
 }
