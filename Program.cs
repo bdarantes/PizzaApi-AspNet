@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
+using PizzariaApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IPedidoService, PedidoService>();
+
 
 var app = builder.Build();
 
