@@ -76,4 +76,21 @@ public class PedidosController : ControllerBase
 
         return Ok(new { message = $"Status do pedido {id} atualizado para: {pedido.Status}"});
     }
+
+    [HttpGet("relatorio/faturamento")]
+    public async Task<ActionResult<RelatorioFaturamentoDto>> GetFaturamento()
+    {
+        var pedidosValidos = await _context.Pedidos
+            .Where(p => p.Status != "Cancelado")
+            .ToListAsync();
+
+        var relatorio = new RelatorioFaturamentoDto
+        {
+            TotalPedidos = pedidosValidos.Count,
+            FaturamentoTotal = pedidosValidos.Sum(p => p.Total),
+            DataRelatorio = DateTime.Now
+        };
+
+        return Ok(relatorio);
+    }
 }
