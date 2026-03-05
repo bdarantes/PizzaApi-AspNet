@@ -18,11 +18,18 @@ public class PedidosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Pedido>>> GetPedidos()
+    public async Task<ActionResult<IEnumerable<Pedido>>> GetPedidos([FromQuery] string? status)
     {
-        return await _context.Pedidos
+        var query = _context.Pedidos
             .Include(p => p.Cliente)
-            .ToListAsync();
+            .Include(p => p.Produto)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(p => p.Status == status);
+
+        return await query.ToListAsync();
+
     }
 
     [HttpPost]

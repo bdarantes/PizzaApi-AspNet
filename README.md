@@ -25,4 +25,6 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 6:** Implementação do Ciclo de Vida do Pedido (Fluxo de Status).
 - [x] **Sprint 6.1:** Validação de Integridade de Status (Domain Validation).
 - [x] **Sprint 7:** CRUD Completo de Produtos (Update/Delete).
-- [x] **Sprint 8:** Refinamento - Adicionar campo "Ativo" ou "Estoque".
+- [x] **Sprint 8:** Implementação de Soft Delete (Conformidade com dados históricos).
+- [x] **Sprint 9:**  Filtros dinâmicos em Pedidos.
+- [x] **Sprint 10:**  Relatório Simples (Soma total de vendas).
