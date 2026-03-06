@@ -7,4 +7,5 @@ public class Cliente
     public string? Telefone { get; set; }
     public String? Endereco { get; set; }
     public DateTime DataCadastro { get; set; } = DateTime.Now;
+    
 }

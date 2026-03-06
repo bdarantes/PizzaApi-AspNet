@@ -1,31 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PizzariaApi.Data;
 using PizzariaApi.Models;
+using PizzariaApi.Services;
 
 namespace PizzariaApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClientesController : ControllerBase
+public class ClientesController :ControllerBase
 {
-    private readonly AppDbContext _context;
-    public ClientesController(AppDbContext context)
+    private readonly IClienteService _clienteService;
+    public ClientesController(IClienteService clienteService)
     {
-        _context = context;
+        _clienteService = clienteService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+    public async Task<ActionResult<IEnumerable<Cliente>>> Get()
     {
-        return await _context.Clientes.ToListAsync();
+        return Ok(await _clienteService.ListarTodos());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
+    public async Task<ActionResult<Cliente>> Post(Cliente cliente)
     {
-        _context.Clientes.Add(cliente);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetClientes), new { id = cliente.Id }, cliente);
+        var novoCliente = await _clienteService.Criar(cliente);
+        return CreatedAtAction(nameof(Get), new { id = novoCliente.Id}, novoCliente);
     }
 }

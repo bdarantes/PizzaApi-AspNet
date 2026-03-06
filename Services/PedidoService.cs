@@ -48,6 +48,23 @@ public class PedidoService : IPedidoService
         return novoPedido;
     }
 
+    public async Task<bool> AlterarStatus(int id, string novoStatus)
+    {
+        var pedido = await _context.Pedidos.FindAsync(id);
+        
+        if (pedido == null)
+            return false;
+
+        var statusPermitidos = new[] { "Pendente", "Em preparo", "Pronto", "Entregue", "Cancelado" };
+        if (!statusPermitidos.Contains(novoStatus))
+            throw new Exception("Status inválido!");
+
+        pedido.Status = novoStatus;
+        await _context.SaveChangesAsync();
+        return true;
+
+    }
+
     public async Task<RelatorioFaturamentoDto> GerarRelatorio()
     {
         var pedidos = await _context.Pedidos.Where(p => p.Status != "Cancelado").ToListAsync();

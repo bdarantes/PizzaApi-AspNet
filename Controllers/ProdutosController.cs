@@ -2,73 +2,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
 using PizzariaApi.Models;
+using PizzariaApi.Services;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ProdutosController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public ProdutosController(AppDbContext context)
+    private readonly IProdutoService _produtoService;
+
+    public ProdutosController(IProdutoService produtoService)
     {
-        _context = context;
+        _produtoService = produtoService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Produto>>> GetProdutos()
+    public async Task<ActionResult<IEnumerable<Produto>>> Get()
     {
-        return await _context.Produtos
-            .Where(p => p.Ativo == true)
-            .ToListAsync();
+        return Ok(await _produtoService.ListarAtivos());
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Produto>> GetById(int id)
+    {
+        var produto = await _produtoService.BuscarPorId(id);
+        if (produto == null)
+            return NotFound("Produto não encontrado.");
+        
+        return Ok(produto);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Produto>> PostProduto(Produto produto)
+    public async Task<ActionResult<Produto>> Post(Produto produto)
     {
-        _context.Produtos.Add(produto);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetProdutos), new { id = produto.Id }, produto);
+        var novoProduto = await _produtoService.Criar(produto);
+        return CreatedAtAction(nameof(GetById), new { id = novoProduto.Id }, novoProduto);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutProduto(int id, Produto produto)
+    public async Task<IActionResult> Put(int id, Produto produto)
     {
-        if (id != produto.Id)
-            return BadRequest("O ID do produto não coincide.");
-
-        _context.Entry(produto).State = EntityState.Modified;
-
         try
         {
-            await _context.SaveChangesAsync();
+            await _produtoService.Atualizar(id, produto);
+            return NoContent();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception ex)
         {
             
-            if (!_context.Produtos.Any(e => e.Id == id))
-            {
-                return NotFound(new { message = $"Erro de Concorrência: O produto com ID {id} não existe mais"});
-            }
-            else
-            {
-                return StatusCode(500, "Ocorreu um erro ao atualizar o produto. O registro pode ter sido alterado por outro usuário");
-            }
+            return BadRequest(ex.Message);
         }
-
-        return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduto(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var produto = await _context.Produtos.FindAsync(id);
-        if (produto == null)
-            return NotFound("Produto não encontrado para exclusão.");
+        var sucesso = await _produtoService.SoftDelete(id);
 
-        produto.Ativo = false;
-        await _context.SaveChangesAsync();
-    
+        if (!sucesso)
+            return NotFound("Produto não encontrado.");
 
-        return Ok(new { message = $"Produto '{produto.Nome}' foi desativado com sucesso (Soft Delete). "});
+        return Ok(new {message = "Produtodesativado com sucesso."});
+
     }
 }

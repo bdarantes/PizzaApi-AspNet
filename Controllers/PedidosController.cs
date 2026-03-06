@@ -24,13 +24,7 @@ public class PedidosController : ControllerBase
         return Ok(await _pedidoService.ListarPedidos(status));
     }
 
-    [HttpGet("relatorio/faturamento")]
-    public async Task<IActionResult> GerarRelatorio()
-    {
-        return Ok(await _pedidoService.GerarRelatorio());
-    }
-
-    [HttpPost]
+        [HttpPost]
     public async Task<IActionResult> Post(PedidoCreateDto dto)
     {
         try
@@ -44,4 +38,32 @@ public class PedidosController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] string novoStatus)
+    {
+        try
+        {
+            var sucesso = await _pedidoService.AlterarStatus(id, novoStatus);
+            if (!sucesso)
+                return NotFound("Pedido não encontrado.");
+
+            return Ok(new { message = $"Status do pedido {id} atualizado para {novoStatus}."});
+
+
+        }
+        catch (System.Exception)
+        {
+            
+            throw;
+        }
+    }
+
+    [HttpGet("relatorio/faturamento")]
+    public async Task<IActionResult> GerarRelatorio()
+    {
+        return Ok(await _pedidoService.GerarRelatorio());
+    }
+
+
 }
