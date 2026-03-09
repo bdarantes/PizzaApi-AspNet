@@ -14,12 +14,18 @@ public class ClientesController :ControllerBase
         _clienteService = clienteService;
     }
 
+    /// <summary>
+    /// Retorna a lista de todos os clientes cadastrados.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cliente>>> Get()
     {
         return Ok(await _clienteService.ListarTodos());
     }
 
+    /// <summary>
+    /// Cadastra um novo cliente no sistema.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<Cliente>> Post(Cliente cliente)
     {

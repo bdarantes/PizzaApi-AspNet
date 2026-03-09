@@ -29,4 +29,4 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 9:** Filtros dinâmicos em Pedidos.
 - [x] **Sprint 10:** Relatório Simples (Soma total de vendas).
 - [x] **Sprint 11:** Desacoplamento de código (Service Layer para Pedidos, Produtos e Clientes).
-- [ ] **Sprint 12:** Documentação com Swagger Annotations (XML Comments).
+- [x] **Sprint 12:** Documentação com Swagger Annotations (XML Comments).

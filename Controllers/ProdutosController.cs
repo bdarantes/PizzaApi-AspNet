@@ -15,12 +15,19 @@ public class ProdutosController : ControllerBase
         _produtoService = produtoService;
     }
 
+    /// <summary>
+    /// Lista todos os produtos disponíveis e ativos.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Produto>>> Get()
     {
         return Ok(await _produtoService.ListarAtivos());
     }
 
+    /// <summary>
+    /// Busca um produto específico pelo seu ID.
+    /// </summary>
+    /// <param name="id">ID numérico do produto.</param>
     [HttpGet("{id}")]
     public async Task<ActionResult<Produto>> GetById(int id)
     {
@@ -31,6 +38,9 @@ public class ProdutosController : ControllerBase
         return Ok(produto);
     }
 
+    /// <summary>
+    /// Cadastra um novo produto no cardápio.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<Produto>> Post(Produto produto)
     {
@@ -38,6 +48,12 @@ public class ProdutosController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = novoProduto.Id }, novoProduto);
     }
 
+    /// <summary>
+    /// Atualiza os dados de um produto existente.
+    /// </summary>
+    /// <remarks>
+    /// O ID do corpo do objeto deve ser igual ao ID da rota.
+    /// </remarks>
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, Produto produto)
     {
@@ -53,6 +69,12 @@ public class ProdutosController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Desativa um produto (Soft Delete).
+    /// </summary>
+    /// <remarks>
+    /// O produto não é removido do banco, apenas marcado como inativo para preservar o histórico de pedidos.
+    /// </remarks>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

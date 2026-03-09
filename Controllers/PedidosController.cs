@@ -18,13 +18,22 @@ public class PedidosController : ControllerBase
         _pedidoService = pedidoService;
     }
 
+    /// <summary>
+    /// Lista todos os produtos disponíveis e ativos.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Get(string? status)
     {
         return Ok(await _pedidoService.ListarPedidos(status));
     }
 
-        [HttpPost]
+    /// <summary>
+    /// Registra um novo pedido na pizzaria.
+    /// </summary>
+    /// <remarks>
+    /// O sistema valida se o produto e o cliente existem e se o produto está ativo antes de finalizar.
+    /// </remarks>
+    [HttpPost]
     public async Task<IActionResult> Post(PedidoCreateDto dto)
     {
         try
@@ -39,6 +48,11 @@ public class PedidosController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Atualiza apenas o status de um pedido.
+    /// </summary>
+    /// <param name="id">ID do pedido.</param>
+    /// <param name="novoStatus">Ex: 'Em Preparo', 'Pronto', 'Entregue', 'Cancelado'.</param>
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] string novoStatus)
     {
@@ -58,7 +72,13 @@ public class PedidosController : ControllerBase
             throw;
         }
     }
-
+    /// <summary>
+    /// Gera um relatório financeiro com o faturamento total da pizzaria.
+    /// </summary>
+    /// <remarks>
+    /// Este cálculo ignora pedidos com status 'Cancelado'.
+    /// </remarks>
+    /// <returns>Retorna o total de pedidos e a soma dos valores.</returns>
     [HttpGet("relatorio/faturamento")]
     public async Task<IActionResult> GerarRelatorio()
     {
