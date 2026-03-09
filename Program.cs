@@ -4,7 +4,6 @@ using PizzariaApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Extrair a connection string para facilitar o uso
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -13,6 +12,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         new MySqlServerVersion(new Version(11, 8, 3))
     )
 );
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // URL padrão do Angular
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -34,7 +45,6 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -43,8 +53,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Comente a linha abaixo se estiver tendo problemas com certificados SSL locais no Linux
-// app.UseHttpsRedirection(); 
+
+app.UseCors("AngularPolicy");
+
 
 app.UseAuthorization();
 app.MapControllers();
