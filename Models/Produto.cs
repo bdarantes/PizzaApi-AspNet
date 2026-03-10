@@ -1,3 +1,5 @@
+using PizzariaApi.Models.Enums;
+
 namespace PizzariaApi.Models;
 
 public class Produto
@@ -6,5 +8,5 @@ public class Produto
     public string Nome { get; set; } = string.Empty;
     public string Categoria { get; set; } = "Pizza";
     public decimal PrecoUnitario { get; set; }
-    public bool Ativo { get; set; } = true;
+    public StatusProduto Status { get; set; } = StatusProduto.Ativo;
 }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
 using PizzariaApi.Models;
+using PizzariaApi.Models.Enums;
 
 namespace PizzariaApi.Services;
 
@@ -16,7 +17,7 @@ public class ProdutoService : IProdutoService
     public async Task<IEnumerable<Produto>> ListarAtivos()
     {
         return await _context.Produtos
-            .Where(p => p.Ativo)
+            .Where(p => p.Status == StatusProduto.Ativo)
             .ToListAsync();    
     }
 
@@ -27,6 +28,8 @@ public class ProdutoService : IProdutoService
 
     public async Task<Produto> Criar(Produto produto)
     {
+        produto.Status = StatusProduto.Ativo;
+
         _context.Produtos.Add(produto);
         await _context.SaveChangesAsync();
         return produto;
@@ -61,7 +64,7 @@ public class ProdutoService : IProdutoService
         if (produto == null)
             return false;
 
-        produto.Ativo = false;
+        produto.Status = StatusProduto.Inativo;
         await _context.SaveChangesAsync();
         return true;
     }
