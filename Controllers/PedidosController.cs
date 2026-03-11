@@ -4,6 +4,8 @@ using PizzariaApi.Data;
 using PizzariaApi.Models;
 using PizzariaApi.DTOs;
 using PizzariaApi.Services;
+using PizzariaApi.Models.Enums;
+using PizzariaApi.Exceptions;
 
 namespace PizzariaApi.Controllers;
 
@@ -22,7 +24,7 @@ public class PedidosController : ControllerBase
     /// Lista todos os produtos disponíveis e ativos.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Get(string? status)
+    public async Task<IActionResult> Get([FromQuery] StatusPedido? status)
     {
         return Ok(await _pedidoService.ListarPedidos(status));
     }
@@ -41,10 +43,14 @@ public class PedidosController : ControllerBase
             var pedido = await _pedidoService.CriarPedido(dto);
             return CreatedAtAction(nameof(Get), new { id = pedido.Id }, pedido);
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
             
-            return BadRequest(ex.Message);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (BusinessException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
@@ -54,22 +60,24 @@ public class PedidosController : ControllerBase
     /// <param name="id">ID do pedido.</param>
     /// <param name="novoStatus">Ex: 'Em Preparo', 'Pronto', 'Entregue', 'Cancelado'.</param>
     [HttpPatch("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] string novoStatus)
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] StatusPedido novoStatus)
     {
         try
         {
-            var sucesso = await _pedidoService.AlterarStatus(id, novoStatus);
-            if (!sucesso)
-                return NotFound("Pedido não encontrado.");
-
-            return Ok(new { message = $"Status do pedido {id} atualizado para {novoStatus}."});
-
+            await _pedidoService.AlterarStatus(id, novoStatus);
+            
+            return Ok(new { message = $"Status do pedido {id} atualizado com sucesso. "});
 
         }
-        catch (System.Exception)
+        catch (NotFoundException ex)
         {
             
-            throw;
+            return NotFound(new { message = ex.Message });
+        }
+
+        catch (BusinessException ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
     /// <summary>

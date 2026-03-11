@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzariaApi.Models;
 using PizzariaApi.Services;
+using PizzariaApi.Exceptions;
 
 namespace PizzariaApi.Controllers;
 
@@ -20,7 +21,8 @@ public class ClientesController :ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cliente>>> Get()
     {
-        return Ok(await _clienteService.ListarTodos());
+        var clientes = await _clienteService.ListarTodos();
+        return Ok(clientes);
     }
 
     /// <summary>
@@ -29,7 +31,20 @@ public class ClientesController :ControllerBase
     [HttpPost]
     public async Task<ActionResult<Cliente>> Post(Cliente cliente)
     {
-        var novoCliente = await _clienteService.Criar(cliente);
-        return CreatedAtAction(nameof(Get), new { id = novoCliente.Id}, novoCliente);
+        try
+        {
+            var novoCliente = await _clienteService.Criar(cliente);
+            
+            return CreatedAtAction(nameof(Get), new { id = novoCliente.Id}, novoCliente);
+        }
+        catch (BusinessException ex)
+        {
+            
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Erro ao processar o cadastro do cliente");
+        }
     }
 }

@@ -3,6 +3,7 @@ using PizzariaApi.Data;
 using PizzariaApi.DTOs;
 using PizzariaApi.Models;
 using PizzariaApi.Exceptions;
+using PizzariaApi.Models.Enums;
 
 namespace PizzariaApi.Services;
 
@@ -15,18 +16,18 @@ public class PedidoService : IPedidoService
         _context = context;
     }
 
-    public async Task<IEnumerable<Pedido>> ListarPedidos(string? status)
+    public async Task<IEnumerable<Pedido>> ListarPedidos(StatusPedido? status)
     {
         var query = _context.Pedidos
             .AsNoTracking()
             .Include(p => p.Cliente)
             .Include(p =>p.Produto)
             .AsQueryable();
-        
-        if (!string.IsNullOrEmpty(status)) 
-            query = query.Where(p => p.Status == status);
 
-        return await query.ToListAsync();
+        if (status.HasValue)
+            query = query.Where(p => p.Status == status.Value);
+
+       return await query.ToListAsync();
 
     }
 
@@ -45,7 +46,7 @@ public class PedidoService : IPedidoService
             ClienteId = dto.ClienteId,
             ProdutoId = dto.ProdutoId,
             DataPedido = DateTime.Now,
-            Status = "Pendente",
+            Status = StatusPedido.Pendente,
             Total = produto.PrecoUnitario
         };
 
@@ -54,24 +55,25 @@ public class PedidoService : IPedidoService
         return novoPedido;
     }
 
-    public async Task<bool> AlterarStatus(int id, string novoStatus)
+    public async Task<bool> AlterarStatus(int id,  StatusPedido novoStatus)
     {
         var pedido = await _context.Pedidos.FindAsync(id);
         
         if (pedido == null)
             throw new NotFoundException($"Pedido nº {id} não encontrado para alteração de status.");
 
-        var statusPermitidos = new[] { "Pendente", "Em preparo", "Pronto", "Entregue", "Cancelado" };
+
+        if (pedido.Status == StatusPedido.Cancelado)
+            throw new BusinessException("Não é possível alterar o status de um pedido cancelado.");
+
+        if (pedido.Status == StatusPedido.Entregue && novoStatus != StatusPedido.Entregue)
+            throw  new BusinessException("Pedidos entregues não podem ter o status alterado.");
         
-        if (!statusPermitidos.Contains(novoStatus))
-            throw new BusinessException($"O status '{novoStatus}' não é um status válido para o sistema.");
-
-        if (pedido.Status == "Entregue" && novoStatus == "Cancelado")
-            throw new BusinessException("Não é possível cancelar um pedido que já foi entregue ao cliente");
-
         pedido.Status = novoStatus;
         await _context.SaveChangesAsync();
+
         return true;
+    
 
     }
 
@@ -79,7 +81,7 @@ public class PedidoService : IPedidoService
     {
         var pedidos = await _context.Pedidos
         .AsNoTracking()
-        .Where(p => p.Status != "Cancelado")
+        .Where(p => p.Status !=  StatusPedido.Cancelado)
         .ToListAsync();
         return new RelatorioFaturamentoDto
         {

@@ -30,3 +30,13 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 10:** Relatório Simples (Soma total de vendas).
 - [x] **Sprint 11:** Desacoplamento de código (Service Layer para Pedidos, Produtos e Clientes).
 - [x] **Sprint 12:** Documentação com Swagger Annotations (XML Comments).
+- [x] **Sprint 13:** Padronização de Tipagem com Enums (Status de Pedido, Produto e Cliente).
+- [x] **Sprint 14:** Gestão de Exceções Customizadas (NotFoundException e BusinessException).
+- [x] **Sprint 15:** Otimização de Performance com Queries No-Tracking (EF Core).
+- [x] **Sprint 16:** Refatoração de Controllers para Clean Controller Pattern (Tratamento Semântico de Erros).
+
+## 💎 Diferenciais do Projeto (O que aprendi/apliquei)
+* **Tratamento Semântico de Erros:** A API não retorna apenas "Erro 500". Ela diferencia erros de negócio (400), recursos não encontrados (404) e erros de validação.
+* **Performance First:** Uso estratégico de `.AsNoTracking()` em métodos de leitura para reduzir o consumo de memória e CPU.
+* **Domain Integrity:** Uso de Enums para garantir que o ciclo de vida de um pedido (Pendente -> Em Preparo -> Entregue) seja respeitado, evitando estados inválidos no banco de dados.
+* **Encapsulamento:** Toda a lógica de decisão foi movida para a Service Layer, mantendo as Controllers limpas e focadas apenas em responder ao protocolo HTTP.
