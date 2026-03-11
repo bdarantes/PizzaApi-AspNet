@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
 using PizzariaApi.DTOs;
 using PizzariaApi.Models;
+using PizzariaApi.Exceptions;
 
 namespace PizzariaApi.Services;
 
@@ -17,6 +18,7 @@ public class PedidoService : IPedidoService
     public async Task<IEnumerable<Pedido>> ListarPedidos(string? status)
     {
         var query = _context.Pedidos
+            .AsNoTracking()
             .Include(p => p.Cliente)
             .Include(p =>p.Produto)
             .AsQueryable();
@@ -31,8 +33,12 @@ public class PedidoService : IPedidoService
     public async Task<Pedido> CriarPedido(PedidoCreateDto dto)
     {
         var produto = await _context.Produtos.FindAsync(dto.ProdutoId);
+        
         if (produto == null)
-            throw new Exception("Produto não encontrado.");
+            throw new NotFoundException("Não foi possível criar o pedido: Produto inexistente.");
+
+        if (produto.Status == Models.Enums.StatusProduto.Inativo)
+            throw new BusinessException("Este produto não está disponível para venda no momento.");
 
         var novoPedido = new Pedido
         {
@@ -53,11 +59,15 @@ public class PedidoService : IPedidoService
         var pedido = await _context.Pedidos.FindAsync(id);
         
         if (pedido == null)
-            return false;
+            throw new NotFoundException($"Pedido nº {id} não encontrado para alteração de status.");
 
         var statusPermitidos = new[] { "Pendente", "Em preparo", "Pronto", "Entregue", "Cancelado" };
+        
         if (!statusPermitidos.Contains(novoStatus))
-            throw new Exception("Status inválido!");
+            throw new BusinessException($"O status '{novoStatus}' não é um status válido para o sistema.");
+
+        if (pedido.Status == "Entregue" && novoStatus == "Cancelado")
+            throw new BusinessException("Não é possível cancelar um pedido que já foi entregue ao cliente");
 
         pedido.Status = novoStatus;
         await _context.SaveChangesAsync();
@@ -67,7 +77,10 @@ public class PedidoService : IPedidoService
 
     public async Task<RelatorioFaturamentoDto> GerarRelatorio()
     {
-        var pedidos = await _context.Pedidos.Where(p => p.Status != "Cancelado").ToListAsync();
+        var pedidos = await _context.Pedidos
+        .AsNoTracking()
+        .Where(p => p.Status != "Cancelado")
+        .ToListAsync();
         return new RelatorioFaturamentoDto
         {
             TotalPedidos = pedidos.Count,

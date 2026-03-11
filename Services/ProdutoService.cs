@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PizzariaApi.Data;
 using PizzariaApi.Models;
 using PizzariaApi.Models.Enums;
+using PizzariaApi.Exceptions;
 
 namespace PizzariaApi.Services;
 
@@ -17,13 +18,21 @@ public class ProdutoService : IProdutoService
     public async Task<IEnumerable<Produto>> ListarAtivos()
     {
         return await _context.Produtos
+            .AsNoTracking()
             .Where(p => p.Status == StatusProduto.Ativo)
             .ToListAsync();    
     }
 
     public async Task<Produto?> BuscarPorId(int id)
     {
-        return await _context.Produtos.FindAsync(id);
+        var produto = await _context.Produtos
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (produto == null)
+            throw new NotFoundException($"O produto com Id {id} n/ao foi encontrado.");
+
+        return produto;
     }
 
     public async Task<Produto> Criar(Produto produto)
@@ -38,7 +47,7 @@ public class ProdutoService : IProdutoService
     public async Task Atualizar(int id, Produto produto)
     {
         if (id != produto.Id)
-            throw new Exception("IDs não coincidem.");
+            throw new ArgumentException("Os IDs fornecidos não coincidem.");
         
         _context.Entry(produto).State = EntityState.Modified;
 
@@ -50,7 +59,7 @@ public class ProdutoService : IProdutoService
         {
             
             if (!await ProdutoExiste(id))
-                throw new Exception("Produto não encontrado");
+                throw new NotFoundException($"Não foi possível atualizar. Produto {id} inexistente.");
 
             throw;
         }
@@ -62,7 +71,7 @@ public class ProdutoService : IProdutoService
         var produto = await _context.Produtos.FindAsync(id);
 
         if (produto == null)
-            return false;
+            throw new NotFoundException($"Falha ao excluir. Produto {id} não encontrado.");
 
         produto.Status = StatusProduto.Inativo;
         await _context.SaveChangesAsync();
