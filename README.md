@@ -34,6 +34,8 @@ Projeto de back-end desenvolvido em **ASP.NET Core 8** para gerenciamento de uma
 - [x] **Sprint 14:** Gestão de Exceções Customizadas (NotFoundException e BusinessException).
 - [x] **Sprint 15:** Otimização de Performance com Queries No-Tracking (EF Core).
 - [x] **Sprint 16:** Refatoração de Controllers para Clean Controller Pattern (Tratamento Semântico de Erros).
+- [x] **Sprint 17:** Implementação de Global Exception Handling (Middleware customizado).
+- [x] **Sprint 18:** Exposição de novos Endpoints (GetById para Clientes) e limpeza total de blocos try/catch nas Controllers.
 
 ## 💎 Diferenciais do Projeto (O que aprendi/apliquei)
 * **Tratamento Semântico de Erros:** A API não retorna apenas "Erro 500". Ela diferencia erros de negócio (400), recursos não encontrados (404) e erros de validação.

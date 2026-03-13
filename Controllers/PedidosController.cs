@@ -38,20 +38,9 @@ public class PedidosController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(PedidoCreateDto dto)
     {
-        try
-        {
-            var pedido = await _pedidoService.CriarPedido(dto);
-            return CreatedAtAction(nameof(Get), new { id = pedido.Id }, pedido);
-        }
-        catch (NotFoundException ex)
-        {
-            
-            return NotFound(new { message = ex.Message });
-        }
-        catch (BusinessException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var pedido = await _pedidoService.CriarPedido(dto);
+        return CreatedAtAction(nameof(Get), new { id = pedido.Id }, pedido);
+
     }
 
     /// <summary>
@@ -62,23 +51,10 @@ public class PedidosController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] StatusPedido novoStatus)
     {
-        try
-        {
-            await _pedidoService.AlterarStatus(id, novoStatus);
+        await _pedidoService.AlterarStatus(id, novoStatus);
             
-            return Ok(new { message = $"Status do pedido {id} atualizado com sucesso. "});
-
-        }
-        catch (NotFoundException ex)
-        {
-            
-            return NotFound(new { message = ex.Message });
-        }
-
-        catch (BusinessException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return Ok(new { message = $"Status do pedido {id} atualizado com sucesso. "});
+    
     }
     /// <summary>
     /// Gera um relatório financeiro com o faturamento total da pizzaria.

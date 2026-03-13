@@ -31,20 +31,21 @@ public class ClientesController :ControllerBase
     [HttpPost]
     public async Task<ActionResult<Cliente>> Post(Cliente cliente)
     {
-        try
-        {
-            var novoCliente = await _clienteService.Criar(cliente);
+        var novoCliente = await _clienteService.Criar(cliente);
             
-            return CreatedAtAction(nameof(Get), new { id = novoCliente.Id}, novoCliente);
-        }
-        catch (BusinessException ex)
-        {
-            
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Erro ao processar o cadastro do cliente");
-        }
+        return CreatedAtAction(nameof(Get), new { id = novoCliente.Id}, novoCliente);
     }
+
+    /// <summary>
+    /// Busca um cliente específico pelo seu ID.
+    /// </summary>
+    /// <param name="id">ID númerico do cliente.</param>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Cliente>> GetById(int id)
+    {
+        var cliente = await _clienteService.BuscarPorId(id);
+        return Ok(cliente);
+    }
+
+
 }
